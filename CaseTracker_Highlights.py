@@ -62,11 +62,12 @@ def install():
                         line = ADIConf.readline()
                         scriptIndex += 1
                     newConf.write('n' + str(scriptIndex) + '=.\\Scripts\\CT-Highlights.ini\n\n')
-                    shutil.copyfile('.\\CT-Highlights.ini', appdatalocalPath + '\\AdiIRC\\Scripts\\CT-Highlights.ini')
 
                 else:
                     newConf.write(line)
+
     #write changes
+    shutil.copyfile('.\\CT-Highlights.ini', appdatalocalPath + '\\AdiIRC\\Scripts\\CT-Highlights.ini')
     shutil.copyfile(appdatalocalPath + '\\AdiIRC\\newconfig.ini', appdatalocalPath + '\\AdiIRC\\config.ini')
     #cleanup
     os.remove(appdatalocalPath + '\\AdiIRC\\newconfig.ini')
