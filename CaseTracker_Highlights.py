@@ -12,10 +12,6 @@ def install():
     uninstall()
     appdatalocalPath = os.getenv('LOCALAPPDATA')
 
-    #backup!
-    now = datetime.datetime.now()
-    shutil.copyfile(appdatalocalPath + '\\AdiIRC\\config.ini', appdatalocalPath + '\\AdiIRC\\config.ini.bak.' + now.strftime('%Y%m%d-%H%M%S'))
-
     #gather highlight lines
     caseHighlightsFile = open(".\\highlightTemplate.txt", 'r')
     caseHighlights = caseHighlightsFile.readlines()
