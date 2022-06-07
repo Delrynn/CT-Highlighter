@@ -25,11 +25,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CaseTracker_Highlights.py" />
+    <Compile Include="setup.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CT-Highlights.ini" />
     <Content Include="highlightTemplate.txt" />
     <Content Include="Images\example.png" />
+    <Content Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />

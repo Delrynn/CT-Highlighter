@@ -22,6 +22,5 @@ python.exe .\CaseTracker_Highlights.py uninstall
 
 ## TODO
 
-- Compile into binary
 - Support light theme
 - Install CaseTracker™ if missing
