@@ -1,4 +1,7 @@
 
+# v0.2.0 CaseTrackerHighlights
+# written by delryn@patton.pro
+
 from msilib.schema import File
 import os, shutil, datetime, sys, re
 
