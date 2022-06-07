@@ -11,6 +11,9 @@ Example:
 ![AdiIRC](https://adiirc.com/) v4+  
 ![LittleFool's CaseTracker™](https://github.com/LittleFool/fuelrats-casetracker)
 
+Assumption:  
+User is using AdiIRC configurations stored in %localappdata% (ie. C:\Users\USERNAME\AppData\Local\AdiIRC). In other words, this will only work if you run AdiIRC as the current user, and not as another user or Administrator.
+
 ## Install/Uninstall
 
 Usage:  
