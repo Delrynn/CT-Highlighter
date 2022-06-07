@@ -24,3 +24,4 @@ python.exe .\CaseTracker_Highlights.py uninstall
 
 - Support light theme
 - Install CaseTracker™ if missing
+- Think of catchier name for binary
