@@ -3,6 +3,9 @@ from msilib.schema import File
 import os, shutil, datetime, sys, re
 
 def main():
+    if not os.path.exists('.\\curHL.txt'):
+        shutil.copyfile('.\\highlightTemplate.txt', '.\\curHL.txt')
+
     if sys.argv[1] == 'install':
         install()
     elif sys.argv[1] == 'uninstall':
@@ -32,8 +35,8 @@ def install():
                     highlightList = list()
 
                     #gather up existing highlights
-                    while line != '\n':
-                        lineSplit = line.split('=')
+                    while line != '\n' or line.startswith('['):
+                        lineSplit = line.split('=', 1)
                         if len(lineSplit) == 2:
                             highlightList.append(lineSplit[1])
                             newConf.write(line)
@@ -66,6 +69,8 @@ def install():
                 else:
                     newConf.write(line)
 
+    shutil.copyfile('.\\highlightTemplate.txt', '.\\curHL.txt')
+
     #write changes
     shutil.copyfile('.\\CT-Highlights.ini', appdatalocalPath + '\\AdiIRC\\Scripts\\CT-Highlights.ini')
     shutil.copyfile(appdatalocalPath + '\\AdiIRC\\newconfig.ini', appdatalocalPath + '\\AdiIRC\\config.ini')
@@ -80,9 +85,13 @@ def uninstall():
     shutil.copyfile(appdatalocalPath + '\\AdiIRC\\config.ini', appdatalocalPath + '\\AdiIRC\\config.ini.bak.' + now.strftime('%Y%m%d-%H%M%S'))
 
     #gather highlight lines
-    caseHighlightsFile = open(".\\highlightTemplate.txt", 'r')
-    caseHighlights = caseHighlightsFile.readlines()
-    caseHighlightsFile.close()
+    currentHighlightsFile = open(".\\curHL.txt", 'r')
+    currentHighlights = currentHighlightsFile.readlines()
+    currentHighlightsFile.close()
+
+    currentHighlightsSplit = list()
+    for highlight in currentHighlights:
+        currentHighlightsSplit.append(highlight.split('=', 1)[1])
 
     with open(appdatalocalPath + '\\AdiIRC\\config.ini', 'r') as ADIConf:
         with open(appdatalocalPath + '\\AdiIRC\\newconfig.ini', 'w') as newConf:
@@ -94,21 +103,24 @@ def uninstall():
                     #gather up existing highlights
                     highlightIndex = 0
                     eraseFlag = True
-                    while line != '\n':
-                        lineSplit = line.split('=')
+                    while line != '\n' or line.startswith('['):
+                        lineSplit = line.split('=', 1)
                         if len(lineSplit) == 2:
                             #check if we're done deleting highlights
-                            if highlightIndex >= len(caseHighlights):
+                            if highlightIndex >= len(currentHighlightsSplit):
                                 eraseFlag = False
                                 highlightIndex = 0
                                 newConf.write('n' + str(highlightIndex) + '=' + lineSplit[1])
                             
                             #check if highlight matches template
                             elif eraseFlag:
-                                highlightRegex = regexifyHighlightLine(caseHighlights[highlightIndex])
-                                if not re.search(highlightRegex, line):
-                                    eraseFlag = False
-                                    highlightIndex = 0
+                                matchFlag = False
+                                for highlight in currentHighlightsSplit:
+                                    highlightRegex = regexifyHighlightLine(highlight)
+                                    if re.search(highlightRegex, line):
+                                        matchFlag = True
+
+                                if not matchFlag:
                                     newConf.write('n' + str(highlightIndex) + '=' + lineSplit[1])
 
                             #done cleaning up, just write the rest
@@ -124,7 +136,7 @@ def uninstall():
                     scriptIndex=0
                     eraseFlag = True
                     while line != '\n':
-                        lineSplit = line.split('=')
+                        lineSplit = line.split('=', 1)
                         if len(lineSplit) == 2:
                             if eraseFlag:
                                 if 'CT-Highlights.ini' not in line:
