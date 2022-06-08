@@ -24,15 +24,17 @@ Assumes the user is using AdiIRC configurations stored in %localappdata% (ie. C:
 
 Assumes the user is sane, and is using a dark theme with a very dark or black MessageBox Background. Colors can be adjusted after installation.
 
+Assumes the user has not altered default mIRC Colors. Colors can be adjusted after installation.
+
 The CaseTracker Highlights must be at the top of the highlight list.
 
 Additional highlights beyond case #9 should be added via the highlightTemplate.txt file.
 
-## Install/Uninstall
+## Usage
 
-Usage:  
-CaseTracker_Highlights.exe install  
-CaseTracker_Highlights.exe uninstall
+Install/Uninstall:  
+CT-Highlighter.exe install  
+CT-Highlighter.exe uninstall
 
 Highlight colors can be customized after installation using the in-program options menu.
 
@@ -42,4 +44,4 @@ Additional highlights, for example highlighting beyond case #9, should be added 
 
 - Support light theme with alternate color set
 - Install CaseTracker™ if missing
-- Think of catchier name for binary
+- Insert highlights in arbitrary position on list
