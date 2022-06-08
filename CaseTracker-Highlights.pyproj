@@ -28,10 +28,13 @@
     <Compile Include="CTHL_Installer.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CT-Highlights.ini" />
+    <Content Include="CT-Highlights-Template.ini" />
+    <Content Include="curHL.txt" />
     <Content Include="highlightTemplate.txt" />
     <Content Include="Images\example.png" />
     <Content Include="README.md" />
+    <Content Include="version.txt" />
+    <Content Include="version.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Images\" />
