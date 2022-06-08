@@ -1,4 +1,4 @@
-# CaseTracker-Highlights
+# CaseTracker-Highlighter
 
 The point of this utility is to easily enable and disable an addon to LittleFool's CaseTracker™. The addon uses the CaseTracker™ to identify messages from clients in any FuelRats #channel, add their case number to the beginning of the line, and highlight the entire line in a case-matching color.
 
