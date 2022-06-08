@@ -31,8 +31,8 @@ def install(debug):
     caseHighlights = caseHighlightsFile.readlines()
     caseHighlightsFile.close()
     
-    highlightTotal = len(caseHighlights) - 1
-    highlightOffset = 0
+    highlightTotal = len(caseHighlights)
+    highlightOffset = 1
     with open(appdatalocalPath + '\\AdiIRC\\config.ini', 'r') as ADIConf:
         with open(appdatalocalPath + '\\AdiIRC\\newconfig.ini', 'w') as newConf:
             for line in ADIConf:
@@ -52,7 +52,7 @@ def install(debug):
                         line = ADIConf.readline()
                         newConf.flush()
                     
-                    highlightOffset = highlightIndex
+                    highlightOffset = highlightIndex + 1
                     highlightStartPos = newConf.tell()
                     if line == '\n':
                         newConf.seek(highlightStartPos-1)
