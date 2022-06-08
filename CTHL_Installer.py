@@ -10,6 +10,7 @@ def main():
     if not os.path.exists('.\\curHL.txt'):
         shutil.copyfile('.\\highlightTemplate.txt', '.\\curHL.txt')
 
+    #debug skips writing files to the AppData directory, and skips deleting temporary files
     debugTest = False
     if len(sys.argv) > 2 and sys.argv[2] == 'debug':
         debugTest = True
@@ -21,6 +22,7 @@ def main():
 
 def install(debug):
 
+    #all actual installs are re-installs
     if not debug:
         uninstall(debug)
 
@@ -31,8 +33,9 @@ def install(debug):
     caseHighlights = caseHighlightsFile.readlines()
     caseHighlightsFile.close()
     
+    #these numbers are used to align case numbers with highlight entry positions
     highlightTotal = len(caseHighlights)
-    highlightOffset = 1
+    highlightOffset = 0
     with open(appdatalocalPath + '\\AdiIRC\\config.ini', 'r') as ADIConf:
         with open(appdatalocalPath + '\\AdiIRC\\newconfig.ini', 'w') as newConf:
             for line in ADIConf:
@@ -46,6 +49,7 @@ def install(debug):
                     line = ADIConf.readline()
                     highlightIndex=0;
 
+                    #go through the entire section, writing current highlights
                     while line != '\n' and not line.startswith('['):
                         newConf.write(line)
                         highlightIndex+=1
@@ -53,21 +57,21 @@ def install(debug):
                         newConf.flush()
                     
                     highlightOffset = highlightIndex + 1
-                    highlightStartPos = newConf.tell()
+                    #back up one step if needed
                     if line == '\n':
-                        newConf.seek(highlightStartPos-1)
-
-
+                        newConf.seek(newConf.tell()-1)
+                        
                     #back up, and insert the case number highlights
                     for highlight in caseHighlights:
                         newConf.write('n' + str(highlightIndex) + '=' + highlight)
                         highlightIndex+=1
                     
-
+                    #write whitespace and the header of the next section
                     newConf.write('\n\n')
                     if line.startswith('['):
                         newConf.write(line)
 
+                #handle scripts section, just add our CT-Highlights.ini script to the list
                 elif '[Scripts]' in line:
                     newConf.write(line) #write section header to new conf
                     line = ADIConf.readline()
@@ -75,12 +79,15 @@ def install(debug):
                     while line != '\n':
                         newConf.write(line)
                         line = ADIConf.readline()
-                        scriptIndex += 1
+                        scriptIndex += 1 #i don't even know if these index numbers matter
                     newConf.write('n' + str(scriptIndex) + '=.\\Scripts\\CT-Highlights.ini\n\n')
 
                 else:
                     newConf.write(line)
+                    
+                newConf.flush()
 
+    #make a backup of the highlights to assist with uninstalling
     shutil.copyfile('.\\highlightTemplate.txt', '.\\curHL.txt')
     
     #fill in variables in Adi script
@@ -118,27 +125,31 @@ def uninstall(debug):
                 if '[HighlightItems]' in line:
                     newConf.write(line) #write section header to new conf
                     line = ADIConf.readline()
-
-                    #gather up existing highlights
+                    
+                    #gather up all of the highlights, and truncate the 'n#=' start
                     highlightIndex = 0
                     while line != '\n' or line.startswith('['):
                         lineSplit = line.split('=', 1)
                         if len(lineSplit) == 2:
+                            matchFlag = False
+                            #see if the current highlight matches any of the case highlights to remove
+                            for highlight in currentHighlights:
+                                highlightRegex = regexifyHighlightLine(highlight)
 
-                                matchFlag = False
-                                for highlight in currentHighlights:
-                                    highlightRegex = regexifyHighlightLine(highlight)
-                                    if re.search(highlightRegex, line):
-                                        matchFlag = True
-                                        break
+                                #if it's a case highlight, just skip it
+                                if re.search(highlightRegex, line):
+                                    matchFlag = True
+                                    break
 
-                                if not matchFlag:
-                                    newConf.write('n' + str(highlightIndex) + '=' + lineSplit[1])
-                                    highlightIndex += 1
+                            #if there were no matches, write the highlight back in
+                            if not matchFlag:
+                                newConf.write('n' + str(highlightIndex) + '=' + lineSplit[1])
+                                highlightIndex += 1
                         
                         line = ADIConf.readline()
                     newConf.write('\n')
 
+                #remove our script from the list of scripts
                 elif '[Scripts]' in line:
                     newConf.write(line) #write section header to new conf
                     scriptIndex=0
@@ -149,11 +160,12 @@ def uninstall(debug):
                             if eraseFlag:
                                 if 'CT-Highlights.ini' not in line:
                                     newConf.write('n' + str(scriptIndex) + '=' + lineSplit[1])
+                                    scriptIndex += 1
                                 else:
-                                    scriptIndex -= 1
+                                    eraseFlag = False
                             else:
                                 newConf.write('n' + str(scriptIndex) + '=' + lineSplit[1])
-                        scriptIndex += 1
+                                scriptIndex += 1
                         line = ADIConf.readline()
                     newConf.write('\n')
 
@@ -170,12 +182,18 @@ def uninstall(debug):
         if os.path.exists(appdatalocalPath + '\\AdiIRC\\Scripts\\CT-Highlights.ini'):
             os.remove(appdatalocalPath + '\\AdiIRC\\Scripts\\CT-Highlights.ini')
 
+
+#AdiIRC uses some FUNKY characters
+#typing the characters in code causes the encoder to panic, so we read them from a file \o/
+with open('.\\delims.txt', 'r') as temp:
+    HIDDEN_CHAR = temp.read(1)
+    DELIM = temp.read(1)
+
 def regexifyHighlightLine(highlightLine):
-    hiddenChar = highlightLine[5]
-    delim = highlightLine[6]
-    lineSplit = str(highlightLine).split(delim)
-    lineSplit[2]='\\d*'+hiddenChar
-    return delim.join(lineSplit)
+    #replace color parameter with '\d*' for regex to match any color customizations
+    lineSplit = str(highlightLine).split(DELIM)
+    lineSplit[2]='\\d*'+HIDDEN_CHAR
+    return DELIM.join(lineSplit)
 
 if __name__=="__main__":
     main()
