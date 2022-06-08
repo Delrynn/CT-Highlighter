@@ -26,7 +26,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CTHL_Installer.py" />
-    <Compile Include="setup.py" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CT-Highlights.ini" />
