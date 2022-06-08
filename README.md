@@ -44,4 +44,4 @@ Additional highlights, for example highlighting beyond case #9, should be added 
 
 - Support light theme with alternate color set
 - Install CaseTracker™ if missing
-- Think of catchier name for binary
+- Insert highlights in arbitrary position on list
