@@ -36,6 +36,7 @@ Install/Uninstall:
 ```
 CT-Highlighter.exe <install|uninstall> [debug]
 ```
+Restart AdiIRC if it is currently running after the install.
 
 The install acts as a re-install if this utility has been used previously. The debug flag will write the new config.ini and CT-Highlights.ini files only to the current dir.
 
