@@ -6,6 +6,7 @@
 build/
 curHL.txt
 CT-Highlights.ini
+newconfig.ini
 
 # User-specific files
 *.rsuser
