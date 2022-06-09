@@ -12,7 +12,7 @@
     <Name>CaseTracker-Highlights</Name>
     <RootNamespace>CaseTracker-Highlights</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>uninstall debug</CommandLineArguments>
+    <CommandLineArguments>install</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
