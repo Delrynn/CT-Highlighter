@@ -52,4 +52,3 @@ If changes are made that shift the highlights up or down on the list, either uni
 - Support light theme with alternate color set
 - Install CaseTracker™ if missing
 - Implement --help
-- Add helpful console feedback
