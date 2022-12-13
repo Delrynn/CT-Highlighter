@@ -37,6 +37,7 @@ uninstall this first, then reinstall it afterward.
 
 ## Usage
 
+IMPORTANT: Make sure you know where your AdiIRC config.ini file is located. Use the command `//echo -ag $adiircdir` in AdiIRC to find the directory if unsure.
  
 ```
 usage: CTHL_Installer [-h] [-i] [-u] [-d] [-c CONFIGDIR]
