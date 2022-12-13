@@ -58,7 +58,7 @@ Example default install:
 ![Install example](/Images/install.png)
 
 Example custom conf directory install:  
-![Install example](/Images/install.png)
+![Install example](/Images/install-configdir.png)
 
 Restart AdiIRC if it is currently running after the install.
 
