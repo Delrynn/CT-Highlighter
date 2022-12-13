@@ -1,5 +1,5 @@
 
-# v0.5.0 CaseTrackerHighlights
+# v0.5.1 CaseTrackerHighlights
 # written by delryn@patton.pro
 
 from msilib.schema import File
@@ -28,6 +28,7 @@ else:
     CONFIG_DIR = str.strip(args.configdir, '"')
 
 HIGHLIGHT_ENABLE_KEY = 'UseHighlight'
+FLASHWHOLE_KEY = 'FlashWhole'
 HIGHLIGHTS_DEFINE_SECTION = '[HighlightItems]'
 SCRIPTS_SECTION = '[Scripts]'
 
@@ -83,6 +84,11 @@ def install(debug):
                 if HIGHLIGHT_ENABLE_KEY in line:
                     log('Enabling highlights')
                     newConf.write('UseHighlight=True\n')
+
+                #Disable entire line highlighting
+                
+                if FLASHWHOLE_KEY in line:
+                    newConf.write('FlashWhole=False\n')
 
                 #find section with highlight definitions, add our highlights
                 elif HIGHLIGHTS_DEFINE_SECTION in line:
