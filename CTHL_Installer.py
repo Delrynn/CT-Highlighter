@@ -25,7 +25,7 @@ args = parser.parse_args()
 if args.configdir is None:
     CONFIG_DIR = os.getenv('LOCALAPPDATA') + '\\AdiIRC\\'
 else: 
-    CONFIG_DIR = args.configdir
+    CONFIG_DIR = str.strip(args.configdir, '"')
 
 HIGHLIGHT_ENABLE_KEY = 'UseHighlight'
 HIGHLIGHTS_DEFINE_SECTION = '[HighlightItems]'
@@ -74,7 +74,8 @@ def install(debug):
     
     #these numbers are used to align case numbers with highlight entry positions
     log('Writing new config')
-
+    highlightsDone = False
+    scriptsDone = False
     with open(ADI_CONFIG_FILEPATH, 'r') as ADIConf:
         with open(NEW_CONFIG_FILENAME, 'w') as newConf:
             for line in ADIConf:
@@ -86,14 +87,26 @@ def install(debug):
                 #find section with highlight definitions, add our highlights
                 elif HIGHLIGHTS_DEFINE_SECTION in line:
                     highlightTotal, highlightOffset = addHighlights(ADIConf, newConf)
+                    highlightsDone = True
 
                 #handle scripts section, just add our CT-Highlights.ini script to the list
                 elif SCRIPTS_SECTION in line:
                     addScript(ADIConf, newConf)
+                    scriptsDone = True
 
                 else:
                     newConf.write(line)
                     
+                newConf.flush()
+
+            if not highlightsDone:
+                highlightTotal, highlightOffset = addHighlights(ADIConf, newConf, newSection=True)
+                highlightsDone = True
+                newConf.flush()
+
+            if not scriptsDone:
+                addScript(ADIConf, newConf, newSection=True)
+                scriptsDone = True
                 newConf.flush()
 
     #make a backup of the highlights to assist with uninstalling
@@ -117,7 +130,7 @@ def install(debug):
 
     log('Installation complete')
 
-def addHighlights(ADIConf, newConf):
+def addHighlights(ADIConf, newConf, newSection=False):
     log('Updating highlights section')
 
     #gather case highlights
@@ -125,12 +138,15 @@ def addHighlights(ADIConf, newConf):
     caseHighlights = caseHighlightsFile.readlines()
     caseHighlightsFile.close()
 
+    if newSection:
+        newConf.write('\n\n[Highlight]\nUseHighlight=True\nFlashWhole=False\n\n')
+
     newConf.write(HIGHLIGHTS_DEFINE_SECTION + '\n') #write section header to new conf
     line = ADIConf.readline()
     highlightIndex=0;
 
     #go through the entire section, writing current highlights
-    while line != '\n' and not line.startswith('['):
+    while line != '\n' and not line.startswith('[') and not newSection and line:
         newConf.write(line)
         highlightIndex+=1
         line = ADIConf.readline()
@@ -154,14 +170,14 @@ def addHighlights(ADIConf, newConf):
 
     return len(caseHighlights), highlightOffset
 
-def addScript(ADIConf, newConf):
+def addScript(ADIConf, newConf, newSection=False):
     log('Updating Scripts section')
     newConf.write(SCRIPTS_SECTION + '\n') #write section header to new conf
     line = ADIConf.readline()
     scriptIndex = 0
 
     #print existing script files
-    while line != '\n' and not line.startswith('['):
+    while line != '\n' and not line.startswith('[') and not newSection and line:
         newConf.write(line)
         line = ADIConf.readline()
         scriptIndex += 1 #i don't even know if these index numbers matter
@@ -258,7 +274,7 @@ def removeScript(ADIConf, newConf):
     scriptIndex=0
     eraseFlag = True
     line = ADIConf.readline()
-    while line != '\n' and not line.startswith('['):
+    while line != '\n' and not line.startswith('[') and line:
         lineSplit = line.split('=', 1)
         if len(lineSplit) == 2:
             if eraseFlag:
