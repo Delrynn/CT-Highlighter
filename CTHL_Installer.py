@@ -86,8 +86,7 @@ def install(debug):
                     newConf.write('UseHighlight=True\n')
 
                 #Disable entire line highlighting
-                
-                if FLASHWHOLE_KEY in line:
+                elif FLASHWHOLE_KEY in line:
                     newConf.write('FlashWhole=False\n')
 
                 #find section with highlight definitions, add our highlights
