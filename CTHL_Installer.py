@@ -1,12 +1,31 @@
 
-# v0.4.1 CaseTrackerHighlights
+# v0.5.0 CaseTrackerHighlights
 # written by delryn@patton.pro
 
 from msilib.schema import File
-import os, shutil, datetime, sys, re
+import os, shutil, datetime, sys, re, argparse
+
+
+
+parser = argparse.ArgumentParser(
+    prog = 'CTHL_Installer',
+    description = 'Installs FuelRats case highlights for CaseTracker in AdiIRC.',
+    epilog = 'You read the help page. Good on you!',
+    formatter_class=argparse.RawTextHelpFormatter)
+
+parser.add_argument('-i', '--install', action='store_true', help='Triggers a (re)install of the tool.')
+parser.add_argument('-u', '--uninstall', action='store_true', help='Triggers an uninstall of the tool. Ignored if -i is used.')
+parser.add_argument('-d', '--debug', action='store_true', help='Writes new config files to the current directory, and leaves current configs in place.')
+parser.add_argument('-c', '--configdir', action='store', help='If running as admin or a different user, use this to set a custom config directory path.\n(ex: -c "C:\Program Files\AdiIRC")')
+
+args = parser.parse_args()
+
 
 #CONSTANTLY CONSTANTS!
-APPDATALOCAL_PATH = os.getenv('LOCALAPPDATA')
+if args.configdir is None:
+    CONFIG_DIR = os.getenv('LOCALAPPDATA') + '\\AdiIRC\\'
+else: 
+    CONFIG_DIR = args.configdir
 
 HIGHLIGHT_ENABLE_KEY = 'UseHighlight'
 HIGHLIGHTS_DEFINE_SECTION = '[HighlightItems]'
@@ -14,30 +33,31 @@ SCRIPTS_SECTION = '[Scripts]'
 
 CTHL_SCRIPT_FILENAME = 'CT-Highlights.ini'
 CTHL_SCRIPT_TEMP_FILENAME = 'CT-Highlights-Template.ini'
-ADI_SCRIPT_PATH = APPDATALOCAL_PATH + '\\AdiIRC\\Scripts\\'
+ADI_SCRIPT_PATH = CONFIG_DIR + '\\Scripts\\'
 
 HLDEF_FILENAME = 'highlightTemplate.txt'
 CURRENT_HLDEF_FILENAME = 'curHL.txt'
 
-ADI_CONFIG_FILEPATH = APPDATALOCAL_PATH + '\\AdiIRC\\config.ini'
+ADI_CONFIG_FILEPATH = CONFIG_DIR + '\\config.ini'
 NEW_CONFIG_FILENAME = 'newconfig.ini'
 
 DELIMS_FILENAME = 'delims.txt'
 
 def main():
+    
     #keep previous version of highlight template for cleanup purposes
     if not os.path.exists('CURRENT_HLDEF_FILENAME'):
         shutil.copyfile(HLDEF_FILENAME, CURRENT_HLDEF_FILENAME)
 
     #debug skips writing files to the AppData directory, and skips deleting temporary files
-    debugTest = False
-    if len(sys.argv) > 2 and sys.argv[2] == 'debug':
-        debugTest = True
+    debugTest = args.debug
 
-    if sys.argv[1] == 'install':
+    if args.install:
         install(debugTest)
-    elif sys.argv[1] == 'uninstall':
+    elif args.uninstall == 'uninstall':
         uninstall(debugTest)
+    else:
+        print('No operation chosen. Please choose --install or --uninstall when executing program.')
 
 def log(message):
     #TODO: write to log file
@@ -54,6 +74,7 @@ def install(debug):
     
     #these numbers are used to align case numbers with highlight entry positions
     log('Writing new config')
+
     with open(ADI_CONFIG_FILEPATH, 'r') as ADIConf:
         with open(NEW_CONFIG_FILENAME, 'w') as newConf:
             for line in ADIConf:
@@ -158,25 +179,33 @@ def uninstall(debug):
     if not debug:
         #backup!
         now = datetime.datetime.now()
-        shutil.copyfile(ADI_CONFIG_FILEPATH, ADI_CONFIG_FILEPATH + '.bak' + now.strftime('%Y%m%d-%H%M%S'))
+        try:
+            shutil.copyfile(ADI_CONFIG_FILEPATH, ADI_CONFIG_FILEPATH + '.bak' + now.strftime('%Y%m%d-%H%M%S'))
+        except:
+            log('Problem backing up config.ini. Is the file somewhere other than ' + ADI_CONFIG_FILEPATH + '?')
+            exit(-1)
 
     log('Removing previous CT highlights')
-    with open(ADI_CONFIG_FILEPATH, 'r') as ADIConf:
-        with open(NEW_CONFIG_FILENAME, 'w') as newConf:
-            for line in ADIConf:
-                #remove our highlight entries
-                if HIGHLIGHTS_DEFINE_SECTION in line:
-                    log('Cleaning Highlights Section')
-                    removeHighlights(ADIConf, newConf)
+    try:
+        with open(ADI_CONFIG_FILEPATH, 'r') as ADIConf:
+            with open(NEW_CONFIG_FILENAME, 'w') as newConf:
+                for line in ADIConf:
+                    #remove our highlight entries
+                    if HIGHLIGHTS_DEFINE_SECTION in line:
+                        log('Cleaning Highlights Section')
+                        removeHighlights(ADIConf, newConf)
 
-                #remove our script from the list of scripts
-                elif SCRIPTS_SECTION in line:
-                    log('Cleaning Scripts Section')
-                    removeScript(ADIConf, newConf)
+                    #remove our script from the list of scripts
+                    elif SCRIPTS_SECTION in line:
+                        log('Cleaning Scripts Section')
+                        removeScript(ADIConf, newConf)
                     
-                #nothing to do, just write the line as-is
-                else:
-                    newConf.write(line)
+                    #nothing to do, just write the line as-is
+                    else:
+                        newConf.write(line)
+    except:
+        log('Problem writing new config.ini. Is the file somewhere other than ' + ADI_CONFIG_FILEPATH + '?')
+        exit(-2)
 
 
     if not debug:
