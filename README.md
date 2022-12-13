@@ -54,10 +54,10 @@ options:
 
 ```
 
-Example default install:
+Example default install:  
 ![Install example](/Images/install.png)
 
-Example custom conf directory install:
+Example custom conf directory install:  
 ![Install example](/Images/install.png)
 
 Restart AdiIRC if it is currently running after the install.
