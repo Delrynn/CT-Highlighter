@@ -12,7 +12,7 @@
     <Name>CaseTracker-Highlights</Name>
     <RootNamespace>CaseTracker-Highlights</RootNamespace>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <CommandLineArguments>install</CommandLineArguments>
+    <CommandLineArguments>-i -c "C:\Program Files\AdiIRC\"</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>

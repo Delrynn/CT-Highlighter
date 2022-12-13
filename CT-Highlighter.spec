@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['CTHL_Installer.py'],
+    ['CT-Highlighter.py'],
     pathex=[],
     binaries=[],
     datas=[],
