@@ -1,5 +1,5 @@
 
-# v0.5.2 CaseTrackerHighlights
+# v0.5.3 CaseTrackerHighlights
 # written by delryn@patton.pro
 
 from msilib.schema import File
