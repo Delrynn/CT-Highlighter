@@ -30,14 +30,21 @@
   <ItemGroup>
     <Content Include="CT-Highlights-Template.ini" />
     <Content Include="curHL.txt" />
-    <Content Include="highlightTemplate.txt" />
+    <Content Include="dist\CTHL_Installer.exe" />
     <Content Include="Images\example.png" />
+    <Content Include="Images\install-configdir.png" />
+    <Content Include="Images\install.png" />
     <Content Include="README.md" />
+    <Content Include="Templates\CT-Highlights-Template.ini" />
+    <Content Include="Templates\delims.txt" />
+    <Content Include="Templates\highlightTemplate.txt" />
     <Content Include="version.txt" />
     <Content Include="version.yaml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="dist\" />
     <Folder Include="Images\" />
+    <Folder Include="Templates\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
