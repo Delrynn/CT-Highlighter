@@ -1,5 +1,5 @@
 ﻿
-# v0.5.3 CaseTrackerHighlights
+# v0.5.6 CaseTrackerHighlights
 # written by delryn@patton.pro
 
 from msilib.schema import File
@@ -61,7 +61,7 @@ def main():
     elif args.uninstall:
         uninstall(debugTest)
     else:
-        print('No operation chosen. Please choose --install or --uninstall when executing program.')
+        print('-------------\nNo operation chosen. Please choose --install or --uninstall when executing program.\nMaybe read the documentation.\n¯\_(ツ)_/¯\n-------------')
 
 def log(message):
     #TODO: write to log file
