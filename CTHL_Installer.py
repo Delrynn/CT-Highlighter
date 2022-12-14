@@ -62,6 +62,7 @@ def main():
         uninstall(debugTest)
     else:
         print('-------------\nNo operation chosen. Please choose --install or --uninstall when executing program.\nMaybe read the documentation.\n¯\_(ツ)_/¯\n-------------')
+        input('Press <Enter> to close...')
 
 def log(message):
     #TODO: write to log file
