@@ -1,4 +1,4 @@
-
+﻿
 # v0.5.3 CaseTrackerHighlights
 # written by delryn@patton.pro
 
@@ -33,29 +33,32 @@ HIGHLIGHTS_DEFINE_SECTION = '[HighlightItems]'
 SCRIPTS_SECTION = '[Scripts]'
 
 CTHL_SCRIPT_FILENAME = 'CT-Highlights.ini'
-CTHL_SCRIPT_TEMP_FILENAME = 'CT-Highlights-Template.ini'
+CTHL_SCRIPT_TEMP_FILENAME = 'Templates\\CT-Highlights-Template.ini'
 ADI_SCRIPT_PATH = CONFIG_DIR + '\\Scripts\\'
 
-HLDEF_FILENAME = 'highlightTemplate.txt'
+HLDEF_FILENAME = 'Templates\\highlightTemplate.txt'
 CURRENT_HLDEF_FILENAME = 'curHL.txt'
 
 ADI_CONFIG_FILEPATH = CONFIG_DIR + '\\config.ini'
 NEW_CONFIG_FILENAME = 'newconfig.ini'
 
-DELIMS_FILENAME = 'delims.txt'
+DELIMS_FILENAME = 'Templates\\delims.txt'
 
 def main():
     
     #keep previous version of highlight template for cleanup purposes
-    if not os.path.exists('CURRENT_HLDEF_FILENAME'):
+    if not os.path.exists(CURRENT_HLDEF_FILENAME):
         shutil.copyfile(HLDEF_FILENAME, CURRENT_HLDEF_FILENAME)
 
     #debug skips writing files to the AppData directory, and skips deleting temporary files
     debugTest = args.debug
 
+    if args.install or args.uninstall:
+        log('Using Config file path: ' + ADI_CONFIG_FILEPATH)
+
     if args.install:
         install(debugTest)
-    elif args.uninstall == 'uninstall':
+    elif args.uninstall:
         uninstall(debugTest)
     else:
         print('No operation chosen. Please choose --install or --uninstall when executing program.')
