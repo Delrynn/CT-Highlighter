@@ -1,10 +1,9 @@
 ﻿
-# v0.5.6 CaseTrackerHighlights
+# v0.7.0 CaseTrackerHighlights
 # written by delryn@patton.pro
 
-from msilib.schema import File
-import os, shutil, datetime, sys, re, argparse
-
+import os, shutil, datetime, re, argparse
+import requests
 
 
 parser = argparse.ArgumentParser(
@@ -27,6 +26,10 @@ if args.configdir is None:
 else: 
     CONFIG_DIR = str.strip(args.configdir, '"')
 
+CTHL_SCRIPT_URL = 'https://raw.githubusercontent.com/Delrynn/CT-Highlighter/master/Templates/CT-Highlights-Template.ini'
+HLDEF_URL = 'https://raw.githubusercontent.com/Delrynn/CT-Highlighter/master/Templates/highlightTemplate.txt'
+DELIMS_URL = 'https://raw.githubusercontent.com/Delrynn/CT-Highlighter/master/Templates/delims.txt'
+
 HIGHLIGHT_ENABLE_KEY = 'UseHighlight'
 FLASHWHOLE_KEY = 'FlashWhole'
 HIGHLIGHTS_DEFINE_SECTION = '[HighlightItems]'
@@ -43,18 +46,29 @@ ADI_CONFIG_FILEPATH = CONFIG_DIR + '\\config.ini'
 NEW_CONFIG_FILENAME = 'newconfig.ini'
 
 DELIMS_FILENAME = 'Templates\\delims.txt'
+HIDDEN_CHAR = ''
+DELIM = ''
 
 def main():
     
-    #keep previous version of highlight template for cleanup purposes
-    if not os.path.exists(CURRENT_HLDEF_FILENAME):
-        shutil.copyfile(HLDEF_FILENAME, CURRENT_HLDEF_FILENAME)
-
     #debug skips writing files to the AppData directory, and skips deleting temporary files
     debugTest = args.debug
 
     if args.install or args.uninstall:
         log('Using Config file path: ' + ADI_CONFIG_FILEPATH)
+        downloadTemplates()
+
+        #AdiIRC uses some FUNKY characters
+        #typing the characters in code causes the encoder to panic, so we read them from a file \o/
+        with open(DELIMS_FILENAME, 'r') as temp:
+            global HIDDEN_CHAR
+            global DELIM 
+            HIDDEN_CHAR = temp.read(1)
+            DELIM = temp.read(1)
+
+    #keep previous version of highlight template for cleanup purposes
+    if not os.path.exists(CURRENT_HLDEF_FILENAME):
+        shutil.copyfile(HLDEF_FILENAME, CURRENT_HLDEF_FILENAME)
 
     if args.install:
         install(debugTest)
@@ -67,6 +81,32 @@ def main():
 def log(message):
     #TODO: write to log file
     print (message)
+
+def downloadTemplates():
+    CTHL_Script_Template = requests.get(CTHL_SCRIPT_URL)
+    HLDefs_Template = requests.get(HLDEF_URL)
+    Delims = requests.get(DELIMS_URL)
+
+    if CTHL_Script_Template.status_code not in range(200, 300) or \
+       HLDefs_Template.status_code not in range(200, 300) or \
+       Delims.status_code not in range(200, 300):
+        print('Error: Could not download tempalte files from github.')
+        exit(-4)
+
+
+    try:
+        if not os.path.exists('.\\Templates'):
+            os.mkdir('.\\Templates')
+
+        with open(CTHL_SCRIPT_TEMP_FILENAME, 'w', encoding="utf-8") as f:
+            f.write(CTHL_Script_Template.text)
+        with open(HLDEF_FILENAME, 'w', encoding="utf-8") as f:
+            f.write(HLDefs_Template.text)
+        with open(DELIMS_FILENAME, 'w', encoding="utf-8") as f:
+            f.write(Delims.text)
+    except:
+        print('Error: Unable to write template files to .\Templates')
+        exit(-3)
 
 def install(debug):
 
@@ -165,6 +205,8 @@ def addHighlights(ADIConf, newConf, newSection=False):
     #back up one step if needed
     if line == '\n':
         newConf.seek(newConf.tell()-1)
+    elif not line:
+        newConf.write('\n')
                         
     #back up, and insert the case number highlights
     log('Inserting case highlights')
@@ -191,6 +233,8 @@ def addScript(ADIConf, newConf, newSection=False):
         line = ADIConf.readline()
         scriptIndex += 1 #i don't even know if these index numbers matter
     #insert our script
+    if not line:
+        newConf.write('\n')
     newConf.write('n' + str(scriptIndex) + '=.\\Scripts\\' + CTHL_SCRIPT_FILENAME + '\n')
 
     #if there wasn't whitespace between the sections, add it for nice formatting
@@ -303,12 +347,6 @@ def removeScript(ADIConf, newConf):
 
     newConf.write(line)
 
-
-#AdiIRC uses some FUNKY characters
-#typing the characters in code causes the encoder to panic, so we read them from a file \o/
-with open(DELIMS_FILENAME, 'r') as temp:
-    HIDDEN_CHAR = temp.read(1)
-    DELIM = temp.read(1)
 
 def regexifyHighlightLine(highlightLine):
     #replace color parameter with '\d*' for regex to match any color customizations
